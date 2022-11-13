@@ -1,0 +1,13 @@
+{
+  "title": "开发环境",
+  "db": {
+    "user": "wuxie",
+    "pwd": "123456",
+    "host": "localhost",
+    "port": "27017",
+    "name": "Naivete"
+    
+  },
+  "secretKey": "Wuxie^_^",
+  "expiresIn": "8640"
+}
