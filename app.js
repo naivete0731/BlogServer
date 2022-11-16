@@ -79,7 +79,7 @@ mount(app,'router')
 //   }
  
 // })
-// const mytoken = passport.getToken({'nickName': 'wuxie'})
+// const mytoken = passport.getToken({'username': 'wuxie'})
 // console.log(mytoken);
 // const myVerifyToken = passport.verifyToken(mytoken)
 // console.log(myVerifyToken);

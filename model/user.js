@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt')
 const Joi = require('joi')
 
 const UserSchema = new Schema({
-  nickName: {
+  username: {
     type: String,
     required: true,
     minlength: 2,
@@ -44,13 +44,13 @@ const UserSchema = new Schema({
 const User = mongoose.model('User', UserSchema)
 
 
-User.findOne({nickname: 'wuxie'}).then(async result => {
+User.findOne({username: 'wuxie'}).then(async result => {
   if (result == null) {
     const salt = await bcrypt.genSalt(10)
     const password = await bcrypt.hash('123456', salt)
 
     const user = await User.create({
-      nickName: 'wuxie',
+      username: 'wuxie',
       email: '1150453675@qq.com',
       password: password,
       role: 'superadmin',
@@ -65,7 +65,7 @@ User.findOne({nickname: 'wuxie'}).then(async result => {
 // 注册格式校验
 const validateUser = user => {
   const schema = {
-    nickName: Joi.string().min(2).max(10).required().error(new Error('用户名不符合格式')),
+    username: Joi.string().min(2).max(10).required().error(new Error('用户名不符合格式')),
     email: Joi.string().regex(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/).required().error(new Error('邮箱不符合格式')),
     password: Joi.string().required().regex(/^[A-Za-z0-9]{6,30}$/).error(new Error('密码不符合格式')),
     status: Joi.number().valid(0,1),
@@ -83,7 +83,7 @@ const validateUser = user => {
 // 登陆格式校验
 const validateLogin = user => {
   const schema = {
-    nickName: Joi.string().regex(/^[a-zA-Z0-9]{2,10}$/).required().error(new Error('账号或密码错误')),
+    username: Joi.string().regex(/^[a-zA-Z0-9]{2,10}$/).required().error(new Error('账号或密码错误')),
     password: Joi.string().regex(/^[a-zA-Z0-9]{6,60}$/).required().error(new Error('账号或密码错误'))
   }
   return Joi.validate(user, schema, {
