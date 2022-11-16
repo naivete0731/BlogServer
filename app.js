@@ -8,8 +8,9 @@ const bodyParser = require('body-parser');
 // 路由
 const mount = require('mount-routes')
 const jwt = require('jsonwebtoken')
+const passport = require('./modules/passport')
 // const { expressjwt } = require("express-jwt")
-const expressJWT = require('express-jwt');
+// const expressJWT = require('express-jwt');
 const app = express()
 // 跨域
 app.use(cors())
@@ -32,7 +33,7 @@ app.use(morgan('dev'))
 //     { url: '/api/login', methods: ['POST'] }
 //   ]
 // }))
-app.use(expressJWT({secret: config.get('secretKey')}).unless({path: ['/api/login']}))
+// app.use(expressJWT({secret: config.get('secretKey')}).unless({path: ['/api/login']}))
 // 开发环境使用s
 
 // if (process.env.NODE_ENV == 'development') {
@@ -45,21 +46,56 @@ app.use(expressJWT({secret: config.get('secretKey')}).unless({path: ['/api/login
 //   console.log('is the production');
 //   app.use(morgan('dev'))
 // }
+
 require('./model/connect')
+app.use((req,res,next) => {
+  if (req.path !== '/api/login') {
+        const verifyData = passport.verifyToken(req.headers.authorization)
+        if (verifyData === 'UnauthorizedError') {
+          res.send('无效token')
+        } else {
+          next()
+        }
+  } else {
+    next()
+  }
+})
 // 路由挂载
 mount(app,'router')
+// app.use((req,res,next) => {
+//   const verifyData = passport.verifyToken(req.headers.authorization)
+// console.log(req.headers.authorization);
+//   if (req._parsedUrl.pathname !== 'login') {
+//      if (verifyData.result) {
+//     next()
+//   } else {
+//     res.send({
+//       status: 400,
+//       message: 'token失效'
+//     })
+//   }
+//   } else {
+//     next()
+//   }
+ 
+// })
+// const mytoken = passport.getToken({'nickName': 'wuxie'})
+// console.log(mytoken);
+// const myVerifyToken = passport.verifyToken(mytoken)
+// console.log(myVerifyToken);
+// app.use((err,req,res,next) => {
+//   // token 解析失败导致的错误
+// 	console.log(err.name)
+//   if(err.name === 'UnauthorizedError') {
+//       return res.sendResult(null, 401, '无效的token')
+//   }
+//   // 其他原因导致的错误
+//   res.sendResult(null, 500, '未知错误')
+  
+// })
+// passport.getToken()
 
 app.use((err,req,res,next) => {
-  // token 解析失败导致的错误
-	console.log(err.name)
-  if(err.name === 'UnauthorizedError') {
-      return res.sendResult(null, 401, '无效的token')
-  }
-  // 其他原因导致的错误
-  res.sendResult(null, 500, '未知错误')
-  
-})
-app.use((req,res,next) => {
   res.status(404).sendResult(null, 404, '404 Not Fund')
 })
 
