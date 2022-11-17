@@ -52,7 +52,7 @@ app.use((req,res,next) => {
   if (req.path !== '/api/login') {
         const verifyData = passport.verifyToken(req.headers.authorization)
         if (verifyData === 'UnauthorizedError') {
-          res.send('无效token')
+          res.sendResult(null, 401, '无效token')
         } else {
           next()
         }

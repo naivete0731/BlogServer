@@ -14,7 +14,11 @@ module.exports.list = async (conditions, cb) => {
     cb(err, null)
   }
 }
-
+/**
+ * 创建管理员用户
+ * @param {*} obj 对象 
+ * @param {*} cb 回调
+ */
 module.exports.create = async (obj, cb) => {
   console.log(obj)
   try {
@@ -30,12 +34,43 @@ module.exports.create = async (obj, cb) => {
   }
 }
 
-
-module.exports.exists = async (username, cb) => {
+/**
+ * 根据账号查询是否存在用户
+ * @param {*} username 账号
+ * @param {*} cb 回调
+ */
+module.exports.exists = async (username, emails, cb) => {
   try {
+
     const user = await User.findOne({username}).select('-password')
-    cb(null, user)
+    const email = await User.findOne({email: emails}).select('-password')
+    cb(null, user, email)
+  } catch (err) {
+    cb(err, null, null)
+  }
+} 
+
+module.exports.BatchDelete = async (id, cb) => {
+  try {
+    if (id.indexOf('-') != -1) {
+     ForEach(id)
+      console.log(result);
+      console.log(3);
+      await cb(null, result)
+    } else {
+      const user = await User.findByIdAndDelete(id)
+      cb(null, user)
+    }
   } catch (err) {
     cb(err, null)
   }
+}
+
+module.exports.ForEach = item => {
+      const ids = item.split('-')
+      let result = []
+      ids.forEach(async item => {
+        const user = await User.findByIdAndDelete(item)
+        result.push(user)
+      })
 }

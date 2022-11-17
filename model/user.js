@@ -91,9 +91,41 @@ const validateLogin = user => {
     abortEarly: true
 })
 }
+// 校验 id 是否标准
+const validateFindById = user => {
+  const schema = Joi.string().required().regex(/^[0-9a-fA-F]{24}$/).error(new Error('用户id非法'))
+        // 验证
+  return Joi.validate(user, schema, {
+            // 允许对象包含被忽略的未知键
+            allowUnknown: true
+  });
+ 
+}
 
+// 批量删除
+const BatchDelete = userID => {
+  if (userID.indexOf('-') != -1) {
+    // 批量删除
+             // 将字符串id分割为数组
+             const ids = userID.split('-');
+             // 存储结果数组
+             const result = [];
+             // 验证
+             for (const item of ids) {
+                 // 验证
+                 let { error } = validateFindById(item);
+                 // 数据格式没有通过验证
+                 if (error) return error
+             }
+ } else {
+   const { error } = validateFindById(userID)
+   if (error) return error
+ }
+}
 module.exports = {
   User,
   validateUser,
-  validateLogin
+  validateLogin,
+  validateFindById,
+  BatchDelete
 }
