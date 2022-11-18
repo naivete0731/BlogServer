@@ -68,8 +68,8 @@ const validateUser = user => {
     username: Joi.string().min(2).max(10).required().error(new Error('用户名不符合格式')),
     email: Joi.string().regex(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/).required().error(new Error('邮箱不符合格式')),
     password: Joi.string().required().regex(/^[A-Za-z0-9]{6,30}$/).error(new Error('密码不符合格式')),
-    status: Joi.number().valid(0,1),
-    role: Joi.string().valid('normal','admin','superadmin')
+    status: Joi.number().valid(0,1).error(new Error('状态不存在')),
+    role: Joi.string().valid('normal','admin','superadmin').error(new Error('角色不存在'))
   }
   // 验证
   return Joi.validate(user, schema, {

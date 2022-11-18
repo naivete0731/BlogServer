@@ -6,6 +6,7 @@ const { validateUser, validateFindById } = require('../../model/user')
 // 用户管理模块
 const mgrServ = require('../../services/ManagerService')
 
+// 查询用户列表
 user.get('/', (req,res) => {
   mgrServ.getManger(123, function(err, result) {
     if (err) return res.sendResult(null, 400, err.message)
@@ -14,22 +15,34 @@ user.get('/', (req,res) => {
   })
 })
 
-user.get('/userinfo', (req,res) => {
-  const token = req.headers.authorization
-    const myVerifyToken = passport.verifyToken(token)
-    res.sendResult(myVerifyToken, 200, '获取用户信息成功')
-})
+// 获取用户信息
+user.get('/:id', 
+  (req, res, next) => {
+    const { error } = validateFindById(req.params.id)
+    if (error) return res.sendResult(null, 400, error.message)
+    next()
+  },
+  (req, res, next) => {
+    mgrServ.findManager(req.params.id, (err, manger) => {
+      if (err) return res.sendResult(null, 400, err)
+      res.sendResult(manger, 200, '获取管理员信息成功')
+    })
+  }
+)
 
+// 修改用户信息
+
+
+// 创建用户信息
 user.post('/',
   // 校验参数
   (req, res, next) => {
     const { error } = validateUser(req.body)
-    // console.log(error.message);
     if (error) return res.sendResult(null, 400, error.message)  
     next()
   },
   (req, res, next) => {
-    console.log(req.body);
+    // console.log(req.body);
     mgrServ.createManager(req.body, (err, manger) => {
       console.log(err);
       if (err) return res.sendResult(null, 400, err)
@@ -39,10 +52,10 @@ user.post('/',
   }
 ) 
 
+// 删除用户信息
 user.delete('/:id',
   (req, res, next) => {
     console.log(req.params.id);
-    
     // console.log(error);
     if (req.params.id.indexOf('-') != -1) {
        // 批量删除
@@ -60,6 +73,7 @@ user.delete('/:id',
                 }
     } else {
       const { error } = validateFindById(req.params.id)
+      
       if (error) return res.sendResult(null, 400, error.message)
     }
     next()
@@ -67,7 +81,6 @@ user.delete('/:id',
   (req, res, next) => {
     // console.log(ids);  
     mgrServ.delete(req.params.id, (err, manger) => {
-
       if (err) return res.sendResult(null, 400, err)
       res.sendResult(manger, 201, '账号删除成功')
     })
