@@ -71,6 +71,27 @@ module.exports.exists = async (username, emails, cb) => {
 } 
 
 /**
+ * 修改管理员信息
+ * @param {*} id 修改的用户id
+ * @param {*} body 修改的信息
+ * @param {*} cb 回调
+ * @returns 
+ */
+module.exports.update = async (id, body, cb) => {
+  try {
+    const email = await User.findOne({email: body.email}).select('-password')
+    if (email !== null) {
+      return cb('邮箱已存在')
+    } 
+    body = _.pick(body, ['email', 'role', 'status', 'avatar'])
+    const user = await User.findByIdAndUpdate({_id:id}, {$set: body}, {new: true, fields: '-password'})
+    cb(null,user)
+  } catch (err) {
+    cb(err)
+  }
+}
+
+/**
  * 批量删除管理员账号
  * @param {*} id 多个账号以 - 分割
  * @param {*} cb 回调

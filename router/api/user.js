@@ -31,8 +31,24 @@ user.get('/:id',
 )
 
 // 修改用户信息
-
-
+user.put('/:id',
+  //校验参数
+  (req, res, next) => {
+    const { error } = validateFindById(req.params.id)
+    // console.log(req.params.id, req.body);
+    console.log(error);
+    if (error) return res.sendResult(null, 400, error.message)  
+    next()
+  },
+  (req, res, next) => {
+    // res.send('ok')
+    mgrServ.updateManager(req.params.id, req.body, (err, manger) => {
+      if (err) return res.sendResult(null, 400, err)
+      res.sendResult(manger, 201, '账号更新成功')
+  })
+}
+)
+  
 // 创建用户信息
 user.post('/',
   // 校验参数
