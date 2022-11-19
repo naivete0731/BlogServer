@@ -23,8 +23,8 @@ const UserSchema = new Schema({
   },
   role: {
     type: String,
-    default: 'normal',
-    enum: ['superadmin','admin','normal']
+    default: 'user',
+    enum: ['superadmin','admin','user']
   },
   avatar: {
     type: String,
@@ -69,7 +69,7 @@ const validateUser = user => {
     email: Joi.string().regex(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/).required().error(new Error('邮箱不符合格式')),
     password: Joi.string().required().regex(/^[A-Za-z0-9]{6,30}$/).error(new Error('密码不符合格式')),
     status: Joi.number().valid(0,1).error(new Error('状态不存在')),
-    role: Joi.string().valid('normal','admin','superadmin').error(new Error('角色不存在'))
+    role: Joi.string().valid('user','admin','superadmin').error(new Error('角色不存在'))
   }
   // 验证
   return Joi.validate(user, schema, {
@@ -122,10 +122,27 @@ const BatchDelete = userID => {
    if (error) return error
  }
 }
+
+// 修改密码
+const validateResetPwd = user => {
+  const schema = {
+    userPass: Joi.string().required().regex(/^[A-Za-z0-9]{6,30}$/).error(new Error('原密码不符合格式,范围在6-30之间')),
+    newPass: Joi.string().required().regex(/^[A-Za-z0-9]{6,30}$/).error(new Error('新密码密码不符合格式,范围在6-30之间')),
+    confirmPass: Joi.string().required().regex(/^[A-Za-z0-9]{6,30}$/).error(new Error('确认密码不符合格式,范围在6-30之间'))
+  }
+  // 验证
+  return Joi.validate(user, schema, {
+    // 检测所有错误
+    abortEarly: false,
+    // 允许对象包括被忽略的未知键
+    allowUnknown: true
+  })
+}
 module.exports = {
   User,
   validateUser,
   validateLogin,
   validateFindById,
-  BatchDelete
+  BatchDelete,
+  validateResetPwd
 }

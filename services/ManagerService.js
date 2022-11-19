@@ -62,6 +62,20 @@ module.exports.updateManager = (userID, body, cb) => {
 }
 
 /**
+ * 修改密码
+ * @param {*} id 用户id
+ * @param {*} body 修改的信息
+ * @param {*} cb 回调
+ */
+module.exports.password = (id, body, cb) => {
+  mangeDao.resetPwd(id, body, (err, manger) => {
+    console.log(err);
+    if (err) return cb(err, null)
+    cb(null, manger)
+  })
+}
+
+/**
  * 删除管理员
  * @param {*} usersID 管理员id 
  * @param {*} cb 回调

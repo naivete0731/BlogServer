@@ -2,7 +2,7 @@ const user = require('express').Router()
 const config = require('config')
 const jwt = require('jsonwebtoken')
 const passport = require('../../modules/passport')
-const { validateUser, validateFindById } = require('../../model/user')
+const { validateUser, validateFindById, validateResetPwd } = require('../../model/user')
 // 用户管理模块
 const mgrServ = require('../../services/ManagerService')
 
@@ -30,24 +30,45 @@ user.get('/:id',
   }
 )
 
+// 修改用户密码
+user.put('/password', 
+// 校验参数
+(req, res, next) => {
+  const { error } = validateFindById(passport.verifyToken(req.headers.authorization).data._id)
+  // console.log(passport.verifyToken(req.headers.authorization));
+  const { error: err} = validateResetPwd(req.body)
+    if (err) return res.sendResult(null, 400, err.message)
+    if (error) return res.sendResult(null, 400, error.message)
+  next()
+},
+(req, res, next) => {
+  const token = passport.verifyToken(req.headers.authorization).data._id
+  mgrServ.password(token, req.body, (err, manger) => {
+    if (err) return res.sendResult(null, 400, err)
+    res.sendResult('', 200, '密码修改成功')
+
+  })
+}
+)
+
 // 修改用户信息
 user.put('/:id',
   //校验参数
   (req, res, next) => {
     const { error } = validateFindById(req.params.id)
-    // console.log(req.params.id, req.body);
-    console.log(error);
     if (error) return res.sendResult(null, 400, error.message)  
     next()
   },
   (req, res, next) => {
-    // res.send('ok')
     mgrServ.updateManager(req.params.id, req.body, (err, manger) => {
       if (err) return res.sendResult(null, 400, err)
       res.sendResult(manger, 201, '账号更新成功')
   })
 }
 )
+
+
+
   
 // 创建用户信息
 user.post('/',

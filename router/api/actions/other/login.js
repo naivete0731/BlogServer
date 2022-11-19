@@ -21,7 +21,7 @@ module.exports = async (req,res) => {
             //   用户的信息对象              加密的密钥     token有效期
       // const tokenStr = jwt.sign({"username": userinfo.username}, config.get('secretKey'), { expiresIn: config.get('expiresIn')})
       // console.log(jwt.verify(tokenStr, config.get('secretKey')))
-      const tokenStr = passport.getToken(user._id)
+      const tokenStr = passport.getToken(user)
       res.send({
         status: 200,
         message: '登陆成功',

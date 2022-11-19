@@ -92,6 +92,40 @@ module.exports.update = async (id, body, cb) => {
 }
 
 /**
+ * 修改密码
+ * @param {*} id 用户id
+ * @param {*} body 原密码，新密码，确认密码
+ * @param {*} cb 回调
+ * @returns 
+ */
+module.exports.resetPwd = async (id, body, cb) => {
+  try {
+      const originPass = await User.findOne({_id: id}).select('password')
+      const { userPass, newPass, confirmPass } = body;
+      // console.log(userPass, newPass, confirmPass);
+      if (await bcrypt.compare(userPass.trim(), originPass.password)) {
+        if (newPass.trim() === confirmPass.trim()) {
+
+          if (await bcrypt.compare(newPass, originPass.password)) {
+            return cb('与近期的密码相同无法更改')
+         }
+         // 更新密码
+         const salt = await bcrypt.genSalt(10);
+         const finalPass = await bcrypt.hash(newPass, salt)
+         const user = await User.findByIdAndUpdate(id, {$set: {password: finalPass}})
+         cb(null, user)
+        } else {
+          cb('两次新密码输入的不相同')
+        }
+      } else {
+        cb('原密码不正确')
+      }
+  } catch (err) {
+    cb(err)
+  }
+}
+
+/**
  * 批量删除管理员账号
  * @param {*} id 多个账号以 - 分割
  * @param {*} cb 回调

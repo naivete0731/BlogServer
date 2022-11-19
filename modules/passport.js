@@ -23,6 +23,14 @@ const verifyToken = (token) => {
  
 }
 
+const verifyGroup = (group) => {
+  try {
+    if (group !== 'superadmin') return '权限不足'
+  } catch (err) {
+    return err
+  }
+}
+
 module.exports = {
   getToken,
   verifyToken
