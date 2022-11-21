@@ -81,11 +81,12 @@ module.exports.update = async (id, body, cb) => {
   try {
     const email = await User.findOne({email: body.email}).select('-password')
     const isEmail = await User.findOne({_id: id}).select('email')
-    console.log(isEmail);
-    console.log(email);
-    if (email !== null) {
-      return cb('邮箱已存在')
-    } 
+    // 判断邮箱是否改变 没有改变则放行，改变需要判断新邮箱是否存在
+    if (isEmail.email !== body.email) {
+      if (email !== null) {
+        return cb('邮箱已存在')
+      } 
+    }
     body = _.pick(body, ['email', 'role', 'status', 'avatar'])
     const user = await User.findByIdAndUpdate({_id:id}, {$set: body}, {new: true, fields: '-password'})
     cb(null,user)
