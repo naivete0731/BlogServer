@@ -5,6 +5,14 @@ const config = require('config')
 const morgan = require('morgan')
 const cors = require('cors')
 const bodyParser = require('body-parser');
+const multer = require('multer'); //解析Post文件
+const objMulter = multer({ 
+  dest: './public/uploads/',  
+  limits:{
+    files:1, //最多上传2个文件
+    fileSize:512000 //设置单个文件最大为 5kb
+} })
+
 // 路由
 const mount = require('mount-routes')
 const jwt = require('jsonwebtoken')
@@ -17,6 +25,7 @@ app.use(cors())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true}))
 app.use(express.static(path.join(__dirname, 'public')))
+app.use(objMulter.any());
 // 初始化统一响应机制
 const resextra = require('./modules/resextra')
 app.use(resextra)
@@ -98,5 +107,6 @@ mount(app,'router')
 app.use((err,req,res,next) => {
   res.status(404).sendResult(null, 404, '404 Not Fund')
 })
+
 
 app.listen(3000, () => console.log('localhost:3000'))
