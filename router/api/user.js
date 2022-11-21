@@ -2,7 +2,7 @@ const user = require('express').Router()
 const config = require('config')
 const jwt = require('jsonwebtoken')
 const passport = require('../../modules/passport')
-const { validateUser, validateFindById, validateResetPwd } = require('../../model/user')
+const { validateUser, validateFindById, validateResetPwd, validateUserInfo } = require('../../model/user')
 // 用户管理模块
 const mgrServ = require('../../services/ManagerService')
 
@@ -56,6 +56,8 @@ user.put('/:id',
   //校验参数
   (req, res, next) => {
     const { error } = validateFindById(req.params.id)
+    const { error:err } = validateUserInfo(req.body)
+    if (err) return res.sendResult(null, 400, err.message)  
     if (error) return res.sendResult(null, 400, error.message)  
     next()
   },
@@ -81,7 +83,7 @@ user.post('/',
   (req, res, next) => {
     // console.log(req.body);
     mgrServ.createManager(req.body, (err, manger) => {
-      console.log(err);
+      // console.log(err);
       if (err) return res.sendResult(null, 400, err)
       res.sendResult(manger, 201, '管理员创建成功')
     })

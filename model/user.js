@@ -138,11 +138,28 @@ const validateResetPwd = user => {
     allowUnknown: true
   })
 }
+
+
+const validateUserInfo = user => {
+  const schema = {
+    email: Joi.string().regex(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/).required().error(new Error('邮箱不符合格式')),
+    status: Joi.number().valid(0,1).error(new Error('状态不存在')),
+    role: Joi.string().valid('user','admin','superadmin').error(new Error('角色不存在'))
+  }
+  // 验证
+  return Joi.validate(user, schema, {
+    // 检测所有错误
+    abortEarly: false,
+    // 允许对象包括被忽略的未知键
+    allowUnknown: true
+  })
+}
 module.exports = {
   User,
   validateUser,
   validateLogin,
   validateFindById,
   BatchDelete,
-  validateResetPwd
+  validateResetPwd,
+  validateUserInfo
 }

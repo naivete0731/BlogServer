@@ -80,6 +80,9 @@ module.exports.exists = async (username, emails, cb) => {
 module.exports.update = async (id, body, cb) => {
   try {
     const email = await User.findOne({email: body.email}).select('-password')
+    const isEmail = await User.findOne({_id: id}).select('email')
+    console.log(isEmail);
+    console.log(email);
     if (email !== null) {
       return cb('邮箱已存在')
     } 
