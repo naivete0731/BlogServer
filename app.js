@@ -7,11 +7,10 @@ const cors = require('cors')
 const bodyParser = require('body-parser');
 const multer = require('multer'); //解析Post文件
 const objMulter = multer({ 
-  dest: './public/uploads/',  
-  limits:{
-    files:1, //最多上传2个文件
-    fileSize:512000 //设置单个文件最大为 5kb
-} })
+  dest: './public/uploads/'
+})
+
+
 
 // 路由
 const mount = require('mount-routes')
@@ -105,6 +104,7 @@ mount(app,'router')
 // passport.getToken()
 
 app.use((err,req,res,next) => {
+  console.log(err);
   res.status(404).sendResult(null, 404, '404 Not Fund')
 })
 

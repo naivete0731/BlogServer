@@ -1,6 +1,8 @@
 const { User } = require('../model/user')
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
+// 文件模块
+const {unlink} = require('../modules/unlink')
 /**
  * 获取所有管理员用户
  * @param {*} conditions 查询条件
@@ -85,8 +87,13 @@ module.exports.update = async (id, body, cb) => {
     if (isEmail.email !== body.email) {
       if (email !== null) {
         return cb('邮箱已存在')
-      } 
+      }
     }
+    unlink(email.avatar)
+      console.log(123456);
+      if (body.avatar.trim() === null) {
+        return cb('请上传头像')
+      }
     body = _.pick(body, ['email', 'role', 'status', 'avatar'])
     const user = await User.findByIdAndUpdate({_id:id}, {$set: body}, {new: true, fields: '-password'})
     cb(null,user)
@@ -141,6 +148,8 @@ module.exports.BatchDelete = async (id, cb) => {
      const result = []
       ids.forEach(async item => {
         await User.findByIdAndDelete(item).select('-password').then((re) => {
+          unlink(re.avatar)
+      
           result.push(re)
         })
         })
@@ -149,10 +158,11 @@ module.exports.BatchDelete = async (id, cb) => {
         }, 1000);
     } else {
       const user = await User.findByIdAndDelete(id)
+      // 删除图片
+      unlink(user.avatar)
       cb(null, user)
     }
   } catch (err) {
     cb(err, null)
   }
 }
-

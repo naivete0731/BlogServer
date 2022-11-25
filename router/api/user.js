@@ -120,6 +120,7 @@ user.delete('/:id',
   (req, res, next) => {
     // console.log(ids);  
     mgrServ.delete(req.params.id, (err, manger) => {
+      console.log(err);
       if (err) return res.sendResult(null, 400, err)
       res.sendResult(manger, 201, '账号删除成功')
     })
