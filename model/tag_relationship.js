@@ -17,6 +17,10 @@ const TagRealtionSchema = new Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Tag',
       required: true
+    },
+    createTime: {
+      type: Date,
+      default: Date.now
     }
 }, {versionKey: false})
 
@@ -41,10 +45,10 @@ const validateTagRealtion = tag => {
 }
 
 // for (let i = 0; i < 20; i++) {
-  TagRealtion.create({
-       pid: '6381dcaff290e071b1faaf3c',
-       tid: '6381deeb2bf1daae30fee36e'
-    }).then(() => console.log('文章创建成功'))
+  // TagRealtion.create({
+  //      pid: '6381dcaff290e071b1faaf3c',
+  //      tid: '6381deeb2bf1daae30fee36e'
+  //   }).then(() => console.log('文章创建成功'))
 // }
 // 导出模块成员
 module.exports = {

@@ -30,6 +30,7 @@ const resextra = require('./modules/resextra')
 app.use(resextra)
 app.use(morgan('dev'))
 
+
 //  注册将 JWT 字符串解析还原成 JSON 对象的中间件
 // 注意：只要配置成功了 express-jwt 这个中间件,就可以把解析出来的用户信息,挂载到 req.user 属性上
 // app.use(expressjwt({ 
@@ -71,6 +72,7 @@ app.use((req,res,next) => {
 })
 // 路由挂载
 mount(app,'router')
+
 // app.use((req,res,next) => {
 //   const verifyData = passport.verifyToken(req.headers.authorization)
 // console.log(req.headers.authorization);

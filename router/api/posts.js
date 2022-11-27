@@ -2,6 +2,7 @@ const posts = require('express').Router()
 const postServ = require('../../services/PostsService')
 const { verifyToken } = require('../../modules/passport')
 const { validatePost, validateFindById } = require('../../model/post')
+const { apiLimiter } = require('../../modules/apiRate_limit')
 // 添加文章信息
 posts.post('/', 
   (req, res, next) => {
@@ -77,7 +78,8 @@ posts.post('/fabulous/:id',
   }
 )
 // 文章搜索
-posts.get('/search/:q', 
+// posts.use(apiLimiter)
+posts.get('/search/:q', apiLimiter,
 (req, res, next) => {
   postServ.search(req.params.q, (err, result) => {
     if (err) return res.sendResult(null, 400, err)
