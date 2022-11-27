@@ -56,6 +56,7 @@ app.use(morgan('dev'))
 // }
 
 require('./model/connect')
+// require('./model/tag_relationship')
 app.use((req,res,next) => {
   if (req.path !== '/api/login') {
         const verifyData = passport.verifyToken(req.headers.authorization)

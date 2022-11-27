@@ -4,6 +4,8 @@ const api = require('express').Router()
 api.use('/users', require('./user'))
 // 分类模块
 api.use('/category', require('./category'))
+// 文章模块
+api.use('/posts', require('./posts'))
 // 登陆模块
 api.post('/login', require('./actions/other/login'))
 // 图片上传
