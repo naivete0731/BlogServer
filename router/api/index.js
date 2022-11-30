@@ -9,6 +9,8 @@ api.use('/category', require('./category'))
 api.use('/posts', require('./posts'))
 // 标签模块
 api.use('/tag', require('./tag'))
+// 评论模块
+api.use('/comment', require('./comment'))
 // 登陆模块
 api.post('/login', apiLimiter, require('./actions/other/login'))
 // 图片上传
