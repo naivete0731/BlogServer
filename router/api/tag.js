@@ -2,6 +2,7 @@ const tag = require('express').Router()
 const tagServ = require('../../services/TagService')
 const { validateTag, validateFindById } = require('../../model/tag')
 
+// 获取所有标签
 tag.get('/',
   (req, res, next) => {
     tagServ.getAllTag((err, result) => {
@@ -11,6 +12,7 @@ tag.get('/',
   }
 )
 
+// 添加标签
 tag.post('/',
   (req, res, next) => {
     const { error } = validateTag(req.body)
@@ -24,6 +26,8 @@ tag.post('/',
   }
 )
 })
+
+// 删除标签
 tag.delete('/:id ', 
   (req, res, next) => {
     const { error } = validateFindById(req.params.id)
@@ -38,6 +42,7 @@ tag.delete('/:id ',
   }
 )
 
+// 添加标签链接
 tag.post('/relation',
   (req, res, next) => {
     const { error } = validateFindById(req.body.pid)
@@ -54,6 +59,7 @@ tag.post('/relation',
   }
 )
 
+// 删除标签链接
 tag.delete('/relation/:id',
 (req, res, next) => {
   const { error } = validateFindById(req.params.id)
@@ -68,6 +74,7 @@ tag.delete('/relation/:id',
 }
 )
 
+// 获取所有标签链接
 tag.get('/relation/',
   (req, res, next) => {
     tagServ.getAllRelation((err, result) => {
@@ -77,6 +84,7 @@ tag.get('/relation/',
   }
 )
 
+// 根据id查看标签链接
 tag.get('/relation/post/:id',
 (req, res, next) => {
   const { error } = validateFindById(req.params.id)

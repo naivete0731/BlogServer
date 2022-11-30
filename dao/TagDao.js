@@ -2,6 +2,10 @@ const { Tag } = require('../model/tag')
 const { TagRealtion } = require('../model/tag_relationship')
 const { Post } = require('../model/post')
 
+/**
+ * 获取所有便签
+ * @param {*} cb 回调
+ */
 module.exports.getAllTag = async (cb) => {
   try {
     const tag = await Tag.find().sort('creaetTime')
@@ -11,6 +15,11 @@ module.exports.getAllTag = async (cb) => {
   }
 }
 
+/**
+ * 添加标签
+ * @param {*} name 标签名
+ * @param {*} cb 回调
+ */
 module.exports.addTag = async (name, cb) => {
   try {
     const Name = await Tag.findOne({name})
@@ -24,6 +33,11 @@ module.exports.addTag = async (name, cb) => {
   }
 }
 
+/**
+ * 删除标签
+ * @param {*} id 标签id 
+ * @param {*} cb 回调
+ */
 module.exports.delTag = async (id, cb) => {
   try {
     const tag = await Tag.findByIdAndDelete(id)
@@ -33,6 +47,12 @@ module.exports.delTag = async (id, cb) => {
   }
 }
 
+/**
+ * 添加标签链接
+ * @param {*} pid 文章id
+ * @param {*} tid 标签id
+ * @param {*} cb 回调
+ */
 module.exports.addRelation = async (pid, tid, cb) => {
   try {
     const post = await TagRealtion.find({pid}).populate('pid').populate('tid')
@@ -56,6 +76,11 @@ module.exports.addRelation = async (pid, tid, cb) => {
   }
 }
 
+/**
+ * 删除标签链接
+ * @param {*} id 标签链接id
+ * @param {*} cb 回调
+ */
 module.exports.deleteRelation = async (id, cb) => {
   try {
     const tagRealtion = await TagRealtion.findByIdAndDelete(id)
@@ -66,6 +91,10 @@ module.exports.deleteRelation = async (id, cb) => {
   }
 }
 
+/**
+ * 获取所有标签链接
+ * @param {*} cb 回调
+ */
 module.exports.getAllRelation= async (cb) => {
   try {
     const tagRealtion = await TagRealtion.find().sort('creaetTime')
@@ -75,6 +104,11 @@ module.exports.getAllRelation= async (cb) => {
   }
 }
 
+/**
+ * 根据id获取标签链接
+ * @param {*} id 标签链接id
+ * @param {*} cb 回调
+ */
 module.exports.getPostRelation = async (id, cb) => {
   try {
     const ispost = await Post.findById(id)
