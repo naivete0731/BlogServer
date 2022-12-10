@@ -44,9 +44,12 @@ const CommentSchema = new Schema({
     },
     //上级评论id
     parentCommentId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Comment',
-        default: null
+        type: String,
+        default: ''
+    },
+    parentNickname: {
+        type: String,
+        default: ''
     },
     //博主
     adminComment: {
@@ -80,9 +83,9 @@ const Comment = mongoose.model('Comment', CommentSchema);
 //         avatar: 'https://q1.qlogo.cn/g?b=qq&nk=1150453675@qq.com&s=100&t=time()'
 //     },
 //     content: '你干嘛嗨嗨哟',
-//     post: '6381dcaff290e071b1faaf3c',
+//     post: '63820bf086e8e0b8d11ee831',
 //     state: 1,
-//     parentCommentId: '6386d3c55e2ad74b0a81ced3',
+//     parentCommentId: null,
 //     adminComment: true
 // })
 // }
@@ -94,7 +97,12 @@ const validateComment = comment => {
     const objectIdReg = /^[0-9a-fA-f]{24}$/;
     // 定义对象验证规则
     const schema = {
-        author: Joi.string().regex(objectIdReg).required().error(new Error('用户id非法')),
+        author: {
+            nickName: Joi.string().min(2).max(30).required().error(new Error('用户名不符合规则')),
+            email: Joi.string().regex(/^[A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,4}$/).required().error(new Error( '邮箱不符合验证规则')),
+            page: Joi.string().regex(/^(?=^.{3,255}$)(http(s)?:\/\/)?(www\.)?[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+(:\d+)*(\/\w+\.\w+)*$/).error(new Error('page不通过')),
+            avatar: Joi.string().min(2).max(100).required().error(new Error('用户名不符合规则'))
+        },
         content: Joi.string().min(1).max(200).required().error(new Error('评论内容不能小于2个字符')),
         post: Joi.string().regex(objectIdReg).required().error(new Error('文章id非法')),
         state: Joi.number().valid(0, 1)
@@ -107,9 +115,18 @@ const validateComment = comment => {
         allowUnknown: true
     })
 }
-
+const validateFindById = user => {
+    const schema = Joi.string().required().regex(/^[0-9a-fA-F]{24}$/).error(new Error('用户id非法'))
+          // 验证
+    return Joi.validate(user, schema, {
+              // 允许对象包含被忽略的未知键
+              allowUnknown: true
+    });
+   
+  }
 // 导出模块成员
 module.exports = {
     Comment,
-    validateComment
+    validateComment,
+    validateFindById
 }
