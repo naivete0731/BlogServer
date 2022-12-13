@@ -25,6 +25,10 @@ module.exports.getAllComment = async (query, cb) => {
         condition.state = query.state
     }
     const comment = await pagination(Comment).page(pagenum).size(pagesize).display(10).find(condition).sort('-createAt').exec()
+    const commentCount = await Comment.countDocuments();
+    const draftCount = await Comment.countDocuments({state: 0})
+    comment.commentCount = commentCount
+    comment.draftCount = draftCount
     cb(null, comment)
   } catch (err) {
     cb(err, null)
@@ -110,7 +114,7 @@ module.exports.getPostComment = async (id, cb) => {
 
 const comment = await Comment.find({post: id,state: 1}).sort('-createAt').select('-__v').lean()
 if (!comment || comment.length === 0) return cb('文章不存在或没有评论')
-
+const Count = await Comment.countDocuments({post: id, state: 1})
 // 过滤出一级评论
 const topComment = comment.filter(item => !item.parentCommentId);
 
@@ -140,6 +144,7 @@ firstLevelCommentList.flat().forEach((item, i) => {
   item.items = secondLevelCommentList[i];
 });
 
+topComment.total = Count
 cb(null, topComment); // 返回一级评论和它的子评论
 
 
@@ -171,3 +176,175 @@ module.exports.AddComment = async (id, body, cb) => {
     cb(err, null)
   }
 }
+
+
+
+// module.exports.DeleteComment = async (ids, cb) => {
+//   try {
+//     // 检查是否为批量删除
+//     if (Array.isArray(ids)) {
+//       // 循环遍历删除每个评论
+//       for (let id of ids) {
+//         let result = await Comment.findOneAndRemove({_id: id});
+//         if (!result) {
+//           return cb(new Error('评论不存在'));
+//         }
+//         // 查找被评论的文章
+//         let post = await Post.findOne({_id: result.post});
+//         // 更新评论数量
+//         post.meta.comments = post.meta.comments - 1;
+//         // 保存文章信息
+//         await post.save();
+//       }
+//     } else {
+//       // 只删除一个评论
+//       const result = await Comment.findOneAndRemove({_id: ids});
+//       if (!result) {
+//         return cb(new Error('评论不存在'));
+//       }
+//       // 查找被评论的文章
+//       let post = await Post.findOne({_id: result.post});
+//       // 更新评论数量
+//       post.meta.comments = post.meta.comments - 1;
+//       // 保存文章信息
+//       await post.save();
+//     }
+//     cb(null);
+//   } catch (err) {
+//     cb(err);
+//   }
+// }
+
+module.exports.DeleteComment = async (id, cb) => {
+  try {
+    // 定义递归函数，用来删除子评论
+async function deleteChildComment(commentId) {
+  // 查找所有子评论
+  const childComments = await Comment.find({parentCommentId: commentId});
+  // 删除所有子评论
+  for (const comment of childComments) {
+    await Comment.deleteOne({_id: comment._id});
+    // 对于每个子评论，再递归删除它的子评论
+    deleteChildComment(comment._id);
+  }
+}
+    if (id.indexOf('-') != -1) {
+      const ids = id.split('-');
+      for (let commentId of ids) {
+        let comment = await Comment.findOne({_id: commentId});
+        if (!comment.parentCommentId) {
+          
+          // 查找一级评论
+          const comment = await Comment.findOne({_id: commentId});
+                  
+          // 删除一级评论
+          await Comment.deleteOne({_id: comment._id});
+                  
+          // 递归删除子评论
+          deleteChildComment(comment._id);
+                  
+          // 更新文章评论数量
+          const post = await Post.findOne({_id: comment.post});
+          post.meta.comments -= 1;
+          await post.save();
+        } else {
+         
+          const comment = await Comment.findOne({_id: commentId});
+
+          // 删除一级评论
+          await Comment.deleteOne({_id: comment._id});
+
+          // 递归删除子评论
+          deleteChildComment(comment._id);
+
+          // 更新文章评论数量
+          const post = await Post.findOne({_id: comment.post});
+          post.meta.comments -= 1;
+          await post.save();
+        }
+      }
+      cb(null, {comment: '删除成功'})
+    } else {
+     
+
+      // 查找一级评论
+      const comment = await Comment.findOne({_id: id});
+          
+      // 删除一级评论
+      await Comment.deleteOne({_id: comment._id});
+          
+      // 递归删除子评论
+      deleteChildComment(comment._id);
+          
+      // 更新文章评论数量
+      const post = await Post.findOne({_id: comment.post});
+      post.meta.comments -= 1;
+      await post.save();
+      cb(null, comment)
+    }
+  
+  
+} catch (err) {
+  cb(err)
+}
+}
+
+
+
+module.exports.BatchUpdateCommentStatus = async (id, cb) => {
+  try {
+    if (id.indexOf('-') != -1) {
+      const ids = id.split('-');
+    for (let id of ids) {
+      let comment = await Comment.findOne({_id: id});
+      comment.state = comment.state == 0 ? 1 : 0;
+      await comment.save();
+    } 
+    cb(null, ids);
+  } else {
+    let comment = await Comment.findOne({_id: id});
+    comment.state = comment.state == 0 ? 1 : 0;
+      await comment.save();
+      cb(null, id);
+  }
+  } catch (err) {
+    cb(err);
+  }
+}
+
+
+
+module.exports.GetLatestComments = async (num, cb) => {
+  try {
+    // 获取最新的 num 条评论
+    const comments = await Comment.find({ state: 1 }).sort({ createdAt: -1 }).limit(num);
+    cb(null, comments);
+  } catch (err) {
+    cb(err, null);
+  }
+}
+
+
+module.exports.getAllCommentsCount = async (cb) => {
+  try {
+  // 查询所有文章数量
+      const commentCount = await Comment.countDocuments();
+      const draftCount = await Comment.countDocuments({state: 0})
+      // 响应
+    cb(null,{commentCount, draftCount})
+  } catch(err) {
+      cb(err, null)
+  }
+}
+
+module.exports.getIdCommentsCount = async (id, cb) => {
+  try {
+  // 查询所有文章数量
+      const Count = await Comment.countDocuments({_id: id, state: 1})
+      // 响应
+    cb(null,Count)
+  } catch(err) {
+      cb(err, null)
+  }
+}
+

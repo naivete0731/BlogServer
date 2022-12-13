@@ -60,12 +60,17 @@ require('./model/connect')
 // require('./model/comment')
 app.use((req,res,next) => {
   if (req.path !== '/api/login') {
+    if (req.headers.authorization) {
         const verifyData = passport.verifyToken(req.headers.authorization)
         if (verifyData === 'UnauthorizedError') {
           res.sendResult(null, 401, '无效token')
         } else {
           next()
         }
+    } else {
+      res.sendResult(null, 401, '无效token')
+    }
+        
   } else {
     next()
   }
@@ -80,7 +85,7 @@ mount(app,'router')
 //      if (verifyData.result) {
 //     next()
 //   } else {
-//     res.send({
+//     res.send({   
 //       status: 400,
 //       message: 'token失效'
 //     })
