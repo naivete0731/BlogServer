@@ -238,6 +238,9 @@ module.exports.deletePosts = async (id, cb) => {
       const result = []
        ids.forEach(async item => {
          await Post.findByIdAndDelete(item).then((re) => {
+          if (re.thumbnail !== null) {
+            unlink(re.thumbnail)
+             }
            result.push(re)
          })
          })
@@ -246,6 +249,9 @@ module.exports.deletePosts = async (id, cb) => {
          }, 1000);
      } else {
        const post = await Post.findByIdAndDelete(id)
+       if (post.thumbnail !== null) {
+        unlink(post.thumbnail)
+         }
        cb(null, post)
      }
   } catch (err) {

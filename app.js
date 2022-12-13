@@ -29,6 +29,16 @@ app.use(objMulter.any());
 const resextra = require('./modules/resextra')
 app.use(resextra)
 app.use(morgan('dev'))
+// ip黑名单
+// const ipfilter = require('express-ipfilter').IpFilter;
+
+// // Set up an array of IP addresses to be blocked
+// const blacklist = ['10.0.0.0/8', '192.168.0.0/16'];
+
+// // Use the ipFilter middleware to block access for the specified IP addresses
+// app.use(ipfilter(blacklist, { mode: 'deny' }));
+
+// Set up your app's routes and other logic as usual
 
 
 //  注册将 JWT 字符串解析还原成 JSON 对象的中间件
@@ -60,17 +70,12 @@ require('./model/connect')
 // require('./model/comment')
 app.use((req,res,next) => {
   if (req.path !== '/api/login') {
-    if (req.headers.authorization) {
         const verifyData = passport.verifyToken(req.headers.authorization)
         if (verifyData === 'UnauthorizedError') {
           res.sendResult(null, 401, '无效token')
         } else {
           next()
         }
-    } else {
-      res.sendResult(null, 401, '无效token')
-    }
-        
   } else {
     next()
   }
@@ -85,7 +90,7 @@ mount(app,'router')
 //      if (verifyData.result) {
 //     next()
 //   } else {
-//     res.send({   
+//     res.send({
 //       status: 400,
 //       message: 'token失效'
 //     })

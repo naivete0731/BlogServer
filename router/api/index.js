@@ -11,6 +11,8 @@ api.use('/posts', require('./posts'))
 api.use('/tag', require('./tag'))
 // 评论模块
 api.use('/comment', require('./comment'))
+// 轮播图模块
+api.use('/slide', require('./slide'))
 // 登陆模块
 api.post('/login', apiLimiter, require('./actions/other/login'))
 // 图片上传
