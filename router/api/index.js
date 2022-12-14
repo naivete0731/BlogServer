@@ -13,6 +13,8 @@ api.use('/tag', require('./tag'))
 api.use('/comment', require('./comment'))
 // 轮播图模块
 api.use('/slide', require('./slide'))
+// 配置模块
+api.use('/settings', require('./settings'))
 // 登陆模块
 api.post('/login', apiLimiter, require('./actions/other/login'))
 // 图片上传

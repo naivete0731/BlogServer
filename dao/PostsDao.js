@@ -1,4 +1,5 @@
 const { Post } = require('../model/post')
+const { Comment } = require('../model/comment')
 const { Category } = require('../model/category')
 // 分页
 const pagination = require('mongoose-sex-page');
@@ -237,10 +238,11 @@ module.exports.deletePosts = async (id, cb) => {
       const ids = id.split('-')
       const result = []
        ids.forEach(async item => {
-         await Post.findByIdAndDelete(item).then((re) => {
+         await Post.findByIdAndDelete(item).then(async (re) => {
           if (re.thumbnail !== null) {
             unlink(re.thumbnail)
              }
+             await Comment.deleteMany({post: re._id})
            result.push(re)
          })
          })
@@ -252,6 +254,7 @@ module.exports.deletePosts = async (id, cb) => {
        if (post.thumbnail !== null) {
         unlink(post.thumbnail)
          }
+         await Comment.deleteMany({post: id})
        cb(null, post)
      }
   } catch (err) {

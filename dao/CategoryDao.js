@@ -1,5 +1,5 @@
 const { Category } = require('../model/category')
-
+const { Post } = require('../model/post')
 /**
  * 获取所有分类
  * @param {*} conditions 查询条件
@@ -40,8 +40,9 @@ module.exports.deleteCategory = async (id, cb) => {
          const ids = id.split('-')
          const result = []
           ids.forEach(async item => {
-            await Category.findByIdAndDelete(item).select('-password').then((re) => {
+            await Category.findByIdAndDelete(item).select('-password').then(async (re) => {
               result.push(re)
+              await Post.deleteMany({category: re._id})
             })
             })
             setTimeout(() => {
@@ -49,6 +50,7 @@ module.exports.deleteCategory = async (id, cb) => {
             }, 1000);
         } else {
           const user = await Category.findByIdAndDelete(id)
+          await Post.deleteMany({category: id})
           cb(null, user)
         }
   } catch (err) {

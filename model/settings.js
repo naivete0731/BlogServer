@@ -50,7 +50,15 @@ const SettingSchema = new Schema({
 
 // 配置集合类
 const Setting = mongoose.model('Setting', SettingSchema);
-
+// Setting.create({
+//     logo: 'public\\uploads\\fdbb52d9b346ab6d43af19c0ba328ede.jpg',
+//     title: '只因伐木累',
+//     keyword: '坤坤，只因你太美',
+//     describe: '我们是只因大家庭',
+//     comment: true,
+//     review: true,
+//     register: true
+// })
 // 配置数据格式校验
 const validateSettings = settings => {
     // 定义对象严重规则
