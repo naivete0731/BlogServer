@@ -4,8 +4,9 @@ const multer=require("multer")
 const {unlink} = require('../../../../modules/unlink')
 module.exports = (req, res) => {
   try {
-    console.log(req.files.length);
-    console.log(req.files[0])
+    // console.log(req.files.length);
+    // console.log(req.files[0])
+    console.log(req.body);
     if (req.files[0].fieldname !== 'file') {
      return res.sendResult(null, 400, '字段有误')
     } 
@@ -23,11 +24,11 @@ module.exports = (req, res) => {
       unlink(req.files[0].path)
       return res.sendResult(null, 400, '图片大小不要超过5MB')
     }
-    console.log(req.files[0].originalname); //req.files post文件 originalname为文件名
-    console.log(type);
+    //console.log(req.files[0].originalname); //req.files post文件 originalname为文件名
+    //console.log(type);
     //获取原始拓展名+后缀名
     var newName = req.files[0].path+path.parse(req.files[0].originalname).ext;
-    console.log(newName);
+    //console.log(newName);
     console.log(req.files[0]);
     //重命名
 	fs.rename(req.files[0].path,newName,function(err){

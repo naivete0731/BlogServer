@@ -1,7 +1,7 @@
 const posts = require('express').Router()
 const postServ = require('../../services/PostsService')
 const { verifyToken } = require('../../modules/passport')
-const { validatePost, validateFindById } = require('../../model/post')
+const { validatePost, validateFindById, validateState } = require('../../model/post')
 const { apiLimiter } = require('../../modules/apiRate_limit')
 // 添加文章信息
 posts.post('/', 
@@ -92,10 +92,12 @@ posts.get('/category/:id',
   (req, res, next) => {
     const { error } = validateFindById(req.params.id)
     if (error) return res.sendResult(null, 400, error.message)
+    const { error: err } = validateState(req.params.state)
+    if (err) return res.sendResult(null, 400, err.message)
     next()
   },
   (req, res, next) => {
-    postServ.category(req.params.id, (err, result) => {
+    postServ.category(req.params.id, req.query.state, (err, result) => {
       if (err) return res.sendResult(null, 400, err)
       res.sendResult(result, 200, '获取成功')
     })

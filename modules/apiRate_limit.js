@@ -9,7 +9,7 @@ const apiLimiter = RateLimit({
         //         res.status(429).json(util.error('Too many requests, please try again later.', 429, null));
         //     }
         // })
-        res.status(429).sendResult(null, 429, '请求次数过多请稍后再试')
+        res.sendResult(null, 429, '请求频繁请稍后再试')
     }
 })
 

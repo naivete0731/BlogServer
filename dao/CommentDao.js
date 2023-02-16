@@ -24,7 +24,7 @@ module.exports.getAllComment = async (query, cb) => {
     if (query.state != undefined) {
         condition.state = query.state
     }
-    const comment = await pagination(Comment).page(pagenum).size(pagesize).display(10).find(condition).sort('-createAt').exec()
+    const comment = await pagination(Comment).page(pagenum).size(pagesize).display(10).find(condition).populate('post').sort('-createAt').exec()
     const commentCount = await Comment.countDocuments();
     const draftCount = await Comment.countDocuments({state: 0})
     comment.commentCount = commentCount
@@ -297,14 +297,17 @@ module.exports.BatchUpdateCommentStatus = async (id, cb) => {
       const ids = id.split('-');
     for (let id of ids) {
       let comment = await Comment.findOne({_id: id});
-      comment.state = comment.state == 0 ? 1 : 0;
+      comment.state = comment.state == '0' ? 1 : 0;
       await comment.save();
     } 
     cb(null, ids);
   } else {
     let comment = await Comment.findOne({_id: id});
-    comment.state = comment.state == 0 ? 1 : 0;
-      await comment.save();
+    console.log('当前状态为' + comment.state);
+    comment.state = comment.state == '0' ? '1' : '0';
+    console.log('现在状态为' + comment.state);
+    const newCom = await comment.save();
+    console.log('最新状态为' + newCom.state);
       cb(null, id);
   }
   } catch (err) {

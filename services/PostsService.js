@@ -98,8 +98,8 @@ module.exports.search = (q, cb) => {
  * @param {*} id 分类id
  * @param {*} cb 回调
  */
-module.exports.category = (id, cb) => {
-  postDao.category(id, (err, result) => {
+module.exports.category = (id, state, cb) => {
+  postDao.category(id, state, (err, result) => {
     if (err) return cb(err, null)
     cb(null, result)
   })

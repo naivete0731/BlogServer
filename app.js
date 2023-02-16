@@ -69,10 +69,11 @@ app.use(morgan('dev'))
 require('./model/connect')
 // require('./model/comment')
 app.use((req,res,next) => {
+  const pass = ['/api/login', '/api/category/', '/api/posts/count', '/api/posts/:id', '/api/posts/lasted', '/api/posts/recommend', '/api/posts/random', '/api/posts/fabulous/:id', '/api/posts/search/:q', '/api/posts/category/:id', '/api/tag/', '/api/tag/relation/', '/api/tag/relation/post/:id','/api/uploads/*']
   if (req.path !== '/api/login') {
         const verifyData = passport.verifyToken(req.headers.authorization)
         if (verifyData === 'UnauthorizedError') {
-          res.sendResult(null, 401, '无效token')
+          res.status(401).sendResult(null, 401, '无效token')
         } else {
           next()
         }

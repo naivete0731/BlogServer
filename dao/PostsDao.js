@@ -49,7 +49,8 @@ module.exports.getPosts = async (query, cb) => {
     // 查询条件
     let condition = {}
     // 分类条件
-    if (query.category != undefined) {
+    console.log(query.category);
+    if (query.category != undefined && query.category !== '') {
         condition.category = query.category;
     }
     // 状态条件
@@ -188,13 +189,13 @@ module.exports.search = async (q, cb) => {
  * @param {*} id 分类id
  * @param {*} cb 回调
  */
-module.exports.category = async (id, cb) => {
+module.exports.category = async (id, state, cb) => {
   try {
     // 查询用户信息
-    const posts = await Post.find({category: id}).populate('author', '-password').populate('category');
-    console.log(posts);
+    const posts = await Post.find({$and:[{category: id},{state:state}]}).populate('author', '-password').populate('category');
     if (posts.length === 0) return cb('没找找到此分类的文章')
     posts.total = posts.length
+    console.log(posts);
     cb(null, posts)
   } catch (err) {
     cb(err, null)

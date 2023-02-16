@@ -101,6 +101,13 @@ const validateFindById = user => {
   });
  
 }
+const validateState = state => {
+    const schema = Joi.number().valid([0, 1]).default(0, 'draft').error(new Error('文章状态非法'))
+
+    return Joi.validate(state, schema, {
+        allowUnknown: true
+    })
+}
 
 // const validateSearch = key => {
 //     const schema = Joi.string().required().regex(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&").error(new Error('用户id非法'))
@@ -123,5 +130,6 @@ const validateFindById = user => {
 module.exports = {
     Post,
     validatePost,
-    validateFindById
+    validateFindById,
+    validateState
 }

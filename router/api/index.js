@@ -21,6 +21,9 @@ api.post('/login', apiLimiter, require('./actions/other/login'))
 api.post('/upload',require('./actions/other/upload'))
 
 
+// 侧边栏模块
+api.use('/menus', require('./menus'))
+
 
 
 

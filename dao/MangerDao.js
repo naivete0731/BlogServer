@@ -82,19 +82,21 @@ module.exports.exists = async (username, emails, cb) => {
 module.exports.update = async (id, body, cb) => {
   try {
     const email = await User.findOne({email: body.email}).select('-password')
-    const isEmail = await User.findOne({_id: id}).select('email')
+    const isEmail = await User.findOne({_id: id}).select('email avatar')
     // 判断邮箱是否改变 没有改变则放行，改变需要判断新邮箱是否存在
     if (isEmail.email !== body.email) {
       if (email !== null) {
         return cb('邮箱已存在')
       }
     }
-    unlink(email.avatar)
-      console.log(123456);
+    // console.log(isEmail);
+    if (isEmail.avatar !== body.avatar) {
+       unlink(email.avatar)
+    }
       if (body.avatar.trim() === null) {
         return cb('请上传头像')
       }
-    body = _.pick(body, ['email', 'role', 'status', 'avatar'])
+    body = _.pick(body, ['username','email', 'role', 'status', 'avatar'])
     const user = await User.findByIdAndUpdate({_id:id}, {$set: body}, {new: true, fields: '-password'})
     cb(null,user)
   } catch (err) {
