@@ -101,7 +101,7 @@ const validateComment = comment => {
             nickName: Joi.string().min(2).max(30).required().error(new Error('用户名不符合规则')),
             email: Joi.string().regex(/^[A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,4}$/).required().error(new Error( '邮箱不符合验证规则')),
             page: Joi.string().regex(/^(?=^.{3,255}$)(http(s)?:\/\/)?(www\.)?[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+(:\d+)*(\/\w+\.\w+)*$/).error(new Error('page不通过')),
-            avatar: Joi.string().min(2).max(100).required().error(new Error('用户名不符合规则'))
+            avatar: Joi.string().min(2).max(100).required().error(new Error('头像不符合规则'))
         },
         content: Joi.string().min(1).max(200).required().error(new Error('评论内容不能小于2个字符')),
         post: Joi.string().regex(objectIdReg).required().error(new Error('文章id非法')),
